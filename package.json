@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "docx": "^5.4.1",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.11.7",
     "puppeteer": "^5.5.0"
   }
 }
