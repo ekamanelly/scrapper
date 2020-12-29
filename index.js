@@ -87,7 +87,8 @@ async function methodOfApplication (url) {
         const result2 = await page2.evaluate(() => {
             return link = window.location.href.split('_source')[0]
         })
-        console.log('woking')
+        console.log(result2)
+        browser2.close()
         return result2
     } catch (e) {
         console.log(e)
@@ -139,7 +140,7 @@ async function buildParagraph(arrayOfArrayOfStrings){
 
 
 
-(async () => { 
+async function getJob (url) { 
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -153,8 +154,6 @@ async function buildParagraph(arrayOfArrayOfStrings){
         // let [el] = await page.$x('//*[@id="printable"]/text()')
         // let text = el.getProperty('text')
         // methodOfApplication(url)
-         
-
         result = await page.evaluate(() => {
             let description = document.querySelector('#printable').textContent
             let signIndex = document.querySelector('#printable').textContent.search("Signup Now");
@@ -234,33 +233,28 @@ async function buildParagraph(arrayOfArrayOfStrings){
            })
           
         })
-
-        
-        
-
-        console.log(result.methodOfApplication)
-        if (result.methodOfApplication.type == 'multipleLink') {
-            console.log('multipleLink')
+        // console.log(result.methodOfApplication)
+        // if (result.methodOfApplication.type == 'multipleLink') {
+        //     console.log('multipleLink')
          
-                let correctedLinks = [];
-           result.methodOfApplication.note.map(async(cur,index)=>{
-            result.methodOfApplication.note = await methodOfApplication(result.methodOfApplication.note[0])
+        //         let correctedLinks = [];
+        //    result.methodOfApplication.note.map(async(cur,index)=>{
+        //     result.methodOfApplication.note = await methodOfApplication(result.methodOfApplication.note[0])
 
                     
-                })
-            // result.methodOfApplication.note =await methodOfApplication(result.methodOfApplication.note[0])
+        //         })
+        //     // result.methodOfApplication.note =await methodOfApplication(result.methodOfApplication.note[0])
 
                    
-        }else if(result.methodOfApplication.type == 'singleLink'){
+        // }else if(result.methodOfApplication.type == 'singleLink'){
 
-            console.log('single')
-            console.log(result.methodOfApplication)
-            // console.log(typeof [])
-            result.methodOfApplication.note = await methodOfApplication(result.methodOfApplication.note)
-            console.log('splet wrong')
-        }
-
-        console.log(result.methodOfApplication)
+        //     console.log('single')
+        //     console.log(result.methodOfApplication)
+        //     // console.log(typeof [])
+        //     result.methodOfApplication.note = await methodOfApplication(result.methodOfApplication.note)
+        //     console.log('splet wrong')
+        // }
+        // console.log(result.methodOfApplication)
         // console.log(result.methodOfApplication)
         // console.log(alLink)
 
@@ -268,19 +262,31 @@ async function buildParagraph(arrayOfArrayOfStrings){
         result.jobDetails = formatedParagraph;
      
 
-        console.log(result)
+        // console.log(result)
         
-        
-        // console.log(result.deadliine)
-        // Job.create({ jobFetched: result }, (err, job) => {
-            
-        //  })
         await browser.close();
+        return result;
     } catch (e) {
         console.log(e)
     }
 
-})();
+};
+
+
+
+(async() => {
+    let job = await  getJob()
+    console.log('second function ')
+    job.methodOfApplication.note.map(async (cur, index) => {
+        job.methodOfApplication.note = await methodOfApplication(job.methodOfApplication.note[0])
+
+
+    })
+    console.log(job)
+
+})()
+// let job = getJob()
+// console.log(job)
 
 
 
