@@ -1,4 +1,7 @@
-const puppeteer = require('puppeteer');
+const express = require('express'),
+      app     = express()
+      cors    = require('cors')
+ 
 const docx = require("docx");
 const fs = require('fs')
 const mongoose = require('mongoose')
@@ -6,14 +9,65 @@ const { Job } = require('./Model');
 
 const { Document, Packer, Paragraph, Table, TextRun, TableRow, TableCell, } = require("docx");
 const { trimSmartfromString } = require('./trimSmarFromString');
+const { NONAME } = require('dns');
+const { ResumeToken } = require('mongodb');
+const puppeteer = require('puppeteer');
+const { linkfetcher } = require("./linkFetcher");
+// const { jobFetcherController } = require("./jobFetcherController");
+const { jobFetcher } = require("./jobFetcer");
+const { jobFetcherController } = require("./jobFetcherController");
+const port = 2000;
 
 
-mongoose.connect('mongodb+srv://kleekit:KleekVoremKarma2020@vorem.zly4i.mongodb.net/vorem?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-});
+// mongoose.connect('mongodb+srv://kleekit:KleekVoremKarma2020@vorem.zly4i.mongodb.net/vorem?retryWrites=true&w=majority', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useFindAndModify: false,
+//     useCreateIndex: true
+// });
+
+
+app.use(cors())
+app.get('/page', async (req,res)=> {
+    try {
+        const links = await linkfetcher('https://www.myjobmag.com/page/1')
+        const result = [];
+    for (let i = 1; i < 2; i++) {
+        // l
+        console.log(` wonking on this ${links[i]}`)
+        const job = await jobFetcher(links[i])
+        // create mongodb
+        result.push(job)
+
+    }
+
+        res.json({links, result });
+
+    } catch (error) {
+        res.json({error:false, msg: 'something went wrong'})
+    }
+
+})
+
+// (async()=>{
+//     const links = await linkfetcher('https://www.myjobmag.com/page/1')
+//     // const result = await jobFetcherController(jobFetcher, links, 3)
+//     // const result = jobFetcherController(jobFetcher, links, 1)
+//     const result = [];
+//     for (let i = 1; i < 2; i++) {
+//         // l
+//         console.log(` wonking on this ${links[i]}`)
+//         const job = await jobFetcher(links[i])
+//         // create mongodb
+//         result.push(job)
+
+//     }
+//     console.log(result)
+// })()
+
+
+
+
 // const { methodOfApplication } = require('./methodOfapplication');
 // const {methodOfApplication} = require('./methodOfapplication')
 
@@ -78,22 +132,7 @@ const findQualification = (string) => {
     return degree
 }
 
-async function methodOfApplication (url) {
-    try {
-        const browser2 = await puppeteer.launch();
-        const page2 = await browser2.newPage();
-        await page2.goto(url);
 
-        const result2 = await page2.evaluate(() => {
-            return link = window.location.href.split('_source')[0]
-        })
-        console.log(result2)
-        browser2.close()
-        return result2
-    } catch (e) {
-        console.log(e)
-    }
-};
 // async function methodOfApplicationMultiply (num){
 //     let links = document.
 //     for (let i = 0; i < num; i++) {
@@ -121,174 +160,15 @@ async function buildParagraph(arrayOfArrayOfStrings){
      return newArray
 }
 
-// async function JobDetails (nodesList){
-//     // let nodes = document.querySelectorAll('.job-details');
-//     let elems = [...nodesList]
-//     let text = []
-//     console.log(nodes)
-
-//     for (var i = 0; i < elems.length; i++) {
-
-//         text.push([document.querySelectorAll('.job-details')[i].textContent])
-//     }
-//     return text  
-// }
 
 
 
 
 
+app.listen(port, ()=> console.log(` connected to port : ${port}`))
 
 
-async function getJob (url) { 
-    try {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        // 'https://www.myjobmag.com/jobs/wpe-case-management-assistant-at-international-rescue-committee'
-        // let url = 'https://www.myjobmag.com/jobs/fresh-jobs-at-michael-stevens-consulting-9'
-        let url = 'https://www.myjobmag.com/jobs/latest-vacancies-at-the-international-rescue-committee-irc-20'
-        'https://www.myjobmag.com/jobs/latest-vacancies-at-the-international-rescue-committee-irc-20'
-        // let url = 'https://www.myjobmag.com/jobs/wpe-case-management-assistant-at-international-rescue-committee'
-        await page.goto(url);
-        // let mainJobName , jobMailAddress, jobUrlAddress, Type, companyProfile; 
-        // let [el] = await page.$x('//*[@id="printable"]/text()')
-        // let text = el.getProperty('text')
-        // methodOfApplication(url)
-        result = await page.evaluate(() => {
-            let description = document.querySelector('#printable').textContent
-            let signIndex = document.querySelector('#printable').textContent.search("Signup Now");
-            let readMoreIndex = document.querySelector('#printable').textContent.search("Read more about this company");
-            let moaResult = document.querySelector('#printable div.mag-b p strong')?
-                { type: 'email', note: document.querySelector('#printable div.mag-b p strong').textContent  } : 
-                document.querySelector('.application-links') ? 
-                
-                (()=>{
-                        let x =  {
-                            type: 'multipleLink', note: []
-                        } 
-                    for (let i = 0; i < document.querySelector(".application-links").childElementCount; i++) {
-                        let selector = `.application-links > li:nth-child(1) > a:nth-child(1)`
-                        x.note.push(document.querySelector(selector).href)
-                        
-                    }
-                    return x;
-
-                })()
-                : document.querySelector('#printable div.mag-b a') ? {
-                        type: 'singleLink', note: document.querySelector('#printable div.mag-b a').href
-                    } : {
-                type: 'error', note: "Error: No means to apply"
-            }  ;
+   
 
 
-            let nodesJobsDetails = [...document.querySelectorAll('.job-details')]
-            'div.mag-b:nth-child(11) > a:nth-child(1)'
-            // // return nodesJobsDetails.length;
-            let text = []
-            let qualifications = []
-            let experience = []
-            let location = []
-            let jobTItles =[]
-            //
-            if(nodesJobsDetails.length>0){
-                for (var i = 0; i < nodesJobsDetails.length; i++) {
-                    text.push([document.querySelectorAll('.job-details')[i].textContent])
-                    qualifications.push(document.querySelectorAll('.job-key-info')[i].querySelector('li:nth-child(2) span:nth-child(2)').textContent)
-                    experience.push(document.querySelectorAll('.job-key-info')[i].querySelector('li:nth-child(3) > span:nth-child(2)').textContent)
-                    location.push(document.querySelectorAll('.job-key-info')[i].querySelector('li:nth-child(4) > span:nth-child(2)').textContent)
-                    jobTItles.push(document.querySelectorAll('.subjob-title')[i].textContent)
-
-                    '#job265607 > a:nth-child(1)'
-
-                    // text.push('top')
-                }
-
-            } else {
-                text.push([document.querySelector('.job-details').textContent])
-                // text.push('rop')
-
-            }
-            // if(!moaResult){
-            //     for (var i = 0; i < nodesJobsDetails.length; i++) {
-
-            //      }
-
-            // }
-           
-           
-            
-           return( {
-               mainJobName: `Job at ${document.querySelector('#read-content-wrap > div > div.read-left-section > ul > li.read-head > ul > li:nth-child(1) > h1').textContent.split(' at ')[1]}`,
-               companyName: document.querySelector('#read-content-wrap > div > div.read-left-section > ul > li.read-head > ul > li:nth-child(1) > h1').textContent.split(' at ')[1],
-               industry: document.querySelector('#read-content-wrap > div > div.read-left-section > ul > li.read-head > ul > li.job-industry > a:nth-child(1)').textContent,
-             
-               qulification: qualifications,
-               experience: experience ,
-               location: location,
-               companyDescription: description.slice(signIndex + 10, readMoreIndex), 
-               jobTitle: jobTItles,
-               jobDetails: text,
-               methodOfApplication: moaResult
-            //    deadliine: document.querySelector('div.read-date-sec-li:nth-child(2)').textContent,
-           })
-          
-        })
-        // console.log(result.methodOfApplication)
-        // if (result.methodOfApplication.type == 'multipleLink') {
-        //     console.log('multipleLink')
-         
-        //         let correctedLinks = [];
-        //    result.methodOfApplication.note.map(async(cur,index)=>{
-        //     result.methodOfApplication.note = await methodOfApplication(result.methodOfApplication.note[0])
-
-                    
-        //         })
-        //     // result.methodOfApplication.note =await methodOfApplication(result.methodOfApplication.note[0])
-
-                   
-        // }else if(result.methodOfApplication.type == 'singleLink'){
-
-        //     console.log('single')
-        //     console.log(result.methodOfApplication)
-        //     // console.log(typeof [])
-        //     result.methodOfApplication.note = await methodOfApplication(result.methodOfApplication.note)
-        //     console.log('splet wrong')
-        // }
-        // console.log(result.methodOfApplication)
-        // console.log(result.methodOfApplication)
-        // console.log(alLink)
-
-        let [formatedParagraph] = await buildParagraph(result.jobDetails)
-        result.jobDetails = formatedParagraph;
-     
-
-        // console.log(result)
-        
-        await browser.close();
-        return result;
-    } catch (e) {
-        console.log(e)
-    }
-
-};
-
-
-
-(async() => {
-    let job = await  getJob()
-    console.log('second function ')
-    job.methodOfApplication.note.map(async (cur, index) => {
-        job.methodOfApplication.note = await methodOfApplication(job.methodOfApplication.note[0])
-
-
-    })
-    console.log(job)
-
-})()
-// let job = getJob()
-// console.log(job)
-
-
-
-
-// console.log(findQualification('/MSC/gsD'))
+ 

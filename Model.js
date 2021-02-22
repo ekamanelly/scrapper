@@ -12,16 +12,24 @@ var JobSchema = new schema({
         type: Date,
         default: Date.now,
     },
-    jobFetched:{}
-
+    // jobFetched:{},
+    mainJobName: String,
+    companyName:String,
+    industry:String,
+    qulification:Array,
+    location:Array,
+    companyDescription: String,
+    jobTitle: Array,
+    jobDetails:Array,
+    methodOfApplication:Object,
+    downloaded:{
+        type:Boolean,
+        default:false
+    }
 
 });
 
 
-
-
-
-// adminSchema.plugin(passportLocalMongoose);
 
 const Job = mongoose.model("Job", JobSchema);
 
