@@ -121,7 +121,7 @@ module.exports.jobFetcher =async (url) => {
         // let [formatedParagraph] = await buildParagraph(result.jobDetails)
         // result.jobDetails = formatedParagraph;
         await browser.close();
-        console.log(result)
+        console.log('all good')
         return result
         // await browser.close();
     } catch (e) {

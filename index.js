@@ -19,12 +19,6 @@ const { jobFetcherController } = require("./jobFetcherController");
 const port = 2000;
 
 
-// mongoose.connect('mongodb+srv://kleekit:KleekVoremKarma2020@vorem.zly4i.mongodb.net/vorem?retryWrites=true&w=majority', {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//     useFindAndModify: false,
-//     useCreateIndex: true
-// });
 
 
 app.use(cors())
@@ -49,116 +43,285 @@ app.get('/page', async (req,res)=> {
 
 })
 
-// (async()=>{
-//     const links = await linkfetcher('https://www.myjobmag.com/page/1')
-//     // const result = await jobFetcherController(jobFetcher, links, 3)
-//     // const result = jobFetcherController(jobFetcher, links, 1)
-//     const result = [];
-//     for (let i = 1; i < 2; i++) {
-//         // l
-//         console.log(` wonking on this ${links[i]}`)
-//         const job = await jobFetcher(links[i])
-//         // create mongodb
-//         result.push(job)
 
-//     }
-//     console.log(result)
-// })()
-
-
-
-
-// const { methodOfApplication } = require('./methodOfapplication');
-// const {methodOfApplication} = require('./methodOfapplication')
-
-
-
-
-
-
-// methodOfApplication('https://www.myjobmag.com','/apply-now/262569' )
-// console.log()
-
-
-
-
-// poppeteer starts here
-
-// 
-
-// (async () => {
-//     try{
-//         const browser = await puppeteer.launch();
-//         const page = await browser.newPage();
-//         await page.goto('https://www.myjobmag.com/page/1');
-//         //*[@id="read-content-wrap"]/div/div[1]/ul/li[1]/ul/li[1]/h1
-
-//         // // other actions...
-//         // let newJobs
-//         // result = await page.evaluate(() => {
-//         //     let job = document.querySelectorAll('#job-date')
-//         //     return [...job].map(async(cur, index) => {
-//         //         if (cur != null && cur.textContent.includes('20') ) {
-//         //         await page.goto(document.querySelectorAll('.job-info h2> a')[index].href, { waitUntil: 'networkidle2' });
-//         //         await page.pdf({ path: `${index}.pdf`, format: 'A4' });
-//         //         }
-//         //     })
-//         // })
-//         await browser.close();
-//     }catch(e){
-//         console.log(e)
-//     }
-   
-// })();
-// const pickExperience(string)=>{
-//     const x = [...string]
-//     x.map((cur,index) => {
-//         if(Number(cur) != NaN){
-//          return x[index]
-//         }
-//     })
-// }
-
-const findQualification = (string) => {
-    const q = ['HND', 'BSc', 'OND', 'SSCE', 'MSc']
-    let degree;
-    q.map((cur, index) => {
-        if (string.includes(cur)) {
-            degree = q[index]
-        } else {
-            degree = 'Any'
-        }
-    })
-    return degree
-}
-
-
-// async function methodOfApplicationMultiply (num){
-//     let links = document.
-//     for (let i = 0; i < num; i++) {
-        
-        
-//     }
-// }
-async function buildParagraph(arrayOfArrayOfStrings){
+async function buildParagraph(arrayOfArrayOfStrings) {
     let newArray = []
-    newArray.push(arrayOfArrayOfStrings.map((cur,index) => {
+    newArray.push(arrayOfArrayOfStrings.map((cur, index) => {
         let stringArray = []
         let lastEscape = 0;
         let currentEscape
-        [...cur[0]].map((curString,stringIndex)=> { 
+        [...cur[0]].map((curString, stringIndex) => {
             if (curString == '\n') {
                 currentEscape = stringIndex
                 // console.log(currentEscape)
-                stringArray.unshift(cur[0].slice(lastEscape, currentEscape))
-                // stringArray.unshift(new Paragraph(cur[0].slice(lastEscape, currentEscape)))
+                // stringArray.unshift(cur[0].slice(lastEscape, currentEscape))
+                stringArray.unshift(new Paragraph(cur[0].slice(lastEscape, currentEscape)))
                 lastEscape = stringIndex + 1;
             }
         })
         return stringArray;
     }))
+    // console.log(newArray)
      return newArray
 }
+
+// buildParagraph()
+
+
+const doscBuilder = async (doscObj) => {
+    const result = await jobFetcher('https://www.myjobmag.com/jobs/job-opportunities-at-zeta-technologies-nigeria-limited')
+    console.log(result);
+    // console.log(result.methodOfApplication)
+    let [formatedParagraph]  = await buildParagraph(result.jobDetails);
+    console.log(formatedParagraph)
+
+    let ray = ['s', 'x', 'd'];
+     let ro =[
+         new TableRow({
+             children: [
+                 new TableCell({
+                     children: [new Paragraph("Job Title")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Degree Type")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Degree Grade")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Faculty")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("State")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Experience")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Course")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Job Description")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Job Mail Address")],
+                 }),
+                 new TableCell({
+                     children: [new Paragraph("Job url Address")],
+                 }),
+             ],
+
+         }),
+     ]
+    formatedParagraph.map((cur,index)=> {
+         ro.push(
+            new TableRow({
+            children: [
+                new TableCell({
+                    children: [new Paragraph(result.jobTitle[index])]
+                }),
+                new TableCell({
+                    children: [new Paragraph(result.qulification[index])]
+                }),
+                new TableCell({
+                    children: [new Paragraph('Any')]
+                }),
+                new TableCell({
+                    children: [],
+                }),
+                new TableCell({
+                    children: [new Paragraph(result.location[index])],
+                }),
+                new TableCell({
+                    children: [new Paragraph(result.experience[index])],
+                }),
+                new TableCell({
+                    children: [new Paragraph('Not Specified')],
+                }),
+                new TableCell({
+                    children: formatedParagraph[index],
+                }),
+                new TableCell({
+                    children: result.methodOfApplication.type == 'email' ? [new Paragraph(result.methodOfApplication.note)] : [],
+                }),
+                new TableCell({
+                    children: result.methodOfApplication.type == 'email' ? [] : [new Paragraph(result.methodOfApplication.note)],
+                    // children:  [new Paragraph('sedrtf')],
+                }),
+
+            ],
+        }),
+            new TableRow({
+                children: [
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [],
+                        // children:  [new Paragraph('sedrtf')],
+                    }),
+
+                ],
+            })
+        
+        )
+
+    })     
+
+    // for(x of ray){
+       
+
+    // }
+
+
+    const doc = new Document();
+    const nestedTable = new Table({
+        rows: ro
+       
+    })
+
+    const table = new Table({
+        rows: [
+            new TableRow({
+                children: [
+                    new TableCell({
+                        children: [new Paragraph("Job Name")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Company Name")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Company Website")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Email Address")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Industry")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Job Mail Address")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Job url Address")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Type")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph("Company Profile")],
+                    }),
+                ],
+
+            }),
+            new TableRow({
+                children: [
+                    new TableCell({
+                        children: [new Paragraph(result.mainJobName)]
+                    }),
+                    new TableCell({
+                        children: [new Paragraph(result.companyName)]
+                    }),
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        children: [],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph(result.industry)],
+                    }),
+                    new TableCell({
+                        children: result.methodOfApplication.type == 'email'  ? [new Paragraph(result.methodOfApplication.note)] : [],
+                    }),
+                    new TableCell({
+                        children: result.methodOfApplication.type == 'email' ? [] : [new Paragraph(result.methodOfApplication.note)],
+                    }),
+
+                    new TableCell({
+                        children: result.methodOfApplication.type == 'email' ? [new Paragraph('2')] : [new Paragraph('3')],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph(result.companyDescription), new Paragraph('Read more about this company')],
+                    }),
+
+                ],
+            }),
+            new TableRow({
+                children: [
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        children: []
+                    }),
+                    new TableCell({
+                        columnSpan: 8,
+                        children: [nestedTable]
+                    }),
+                ],
+            }),
+
+
+        ],
+
+
+    });
+
+    doc.addSection({
+        children: [table],
+    });
+    // let fileName = result.companyName + ' ' + result.deadliine.replace('Deadline:', '')
+    let fileName = result.companyName
+    Packer.toBuffer(doc).then((buffer) => {
+        fs.writeFileSync(`test.docx`, buffer);
+    });
+
+}
+doscBuilder();
+
+// const findQualification = (string) => {
+//     const q = ['HND', 'BSc', 'OND', 'SSCE', 'MSc']
+//     let degree;
+//     q.map((cur, index) => {
+//         if (string.includes(cur)) {
+//             degree = q[index]
+//         } else {
+//             degree = 'Any'
+//         }
+//     })
+//     return degree
+// }
+
+
+
 
 
 
