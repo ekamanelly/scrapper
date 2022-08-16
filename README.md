@@ -5,12 +5,11 @@
 This project got me interested in programing. So then, I use to V.A for Real estate company called Ridge Point 
 holding as Data administrator.The Job title is just a fancy word for a data entry assistant and task was very repetitive, a train track. 
 I got a developer to automate the task, but it meant splitting my pay on any edit. That was too much power over my efficiency.
-There's nothing fancy about the code but built I it myself with 
 
 - Puppeteer.js => The dev tool to inspect the platform 
 - Express.js => I had to host the project in case I'd to work with someone PC
 - Docx.js wrote fetched data to docx to be uploaded in these [format](https://github.com/ekamanelly/scrapper/blob/master/upload)
-- React, had to cloth the shameless server with some [love](https://github.com/ekamanelly/scrapper/blob/master/kfront), but ;)
+- React, had to cloth the shameless server with some [love](https://github.com/ekamanelly/scrapper/blob/master/kfront)
 
 
 
